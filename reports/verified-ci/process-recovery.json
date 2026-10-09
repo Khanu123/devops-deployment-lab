@@ -1,0 +1,24 @@
+{
+  "result": "passed",
+  "scope": "actual local Python processes; not AWS ECS",
+  "events": [
+    {
+      "release": "stable-v1",
+      "readiness": 200,
+      "liveness": 200,
+      "decision": "accept release"
+    },
+    {
+      "release": "broken-v2",
+      "readiness": 503,
+      "liveness": 200,
+      "decision": "reject release"
+    },
+    {
+      "release": "stable-v1",
+      "readiness": 200,
+      "liveness": 200,
+      "decision": "accept release"
+    }
+  ]
+}

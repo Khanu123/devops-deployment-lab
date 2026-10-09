@@ -1,0 +1,21 @@
+{
+  "headSha": "54c4f7e894667540b04a1c62dc137a2138634a0f",
+  "status": "completed",
+  "conclusion": "success",
+  "url": "https://github.com/Khanu123/devops-deployment-lab/actions/runs/38005804206",
+  "jobs": [
+    {
+      "name": "application",
+      "conclusion": "success"
+    },
+    {
+      "name": "terraform",
+      "conclusion": "success"
+    },
+    {
+      "name": "container",
+      "conclusion": "success"
+    }
+  ],
+  "scope": "GitHub Ubuntu runners; no AWS deployment"
+}

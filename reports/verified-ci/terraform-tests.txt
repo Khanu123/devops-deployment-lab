@@ -1,0 +1,9 @@
+tests/lab.tftest.hcl... in progress
+  run "secure_lab_topology"... pass
+  run "reject_open_ingress"... pass
+  run "reject_mutable_image"... pass
+  run "https_requires_domain"... pass
+tests/lab.tftest.hcl... tearing down
+tests/lab.tftest.hcl... pass
+
+Success! 4 passed, 0 failed.

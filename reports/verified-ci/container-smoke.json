@@ -1,0 +1,29 @@
+{
+  "result": "passed",
+  "checks": [
+    {
+      "path": "/healthz",
+      "status": 200
+    },
+    {
+      "path": "/readyz",
+      "status": 200
+    },
+    {
+      "path": "/version",
+      "status": 200
+    },
+    {
+      "path": "/api/cases",
+      "status": 200
+    },
+    {
+      "path": "/metrics",
+      "status": 200
+    },
+    {
+      "path": "/",
+      "status": 200
+    }
+  ]
+}

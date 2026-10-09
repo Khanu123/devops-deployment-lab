@@ -1,0 +1,14 @@
+{"event": "startup", "version": "ci", "port": 8080}
+{"event": "request", "path": "/readyz", "status": 200, "duration_ms": 0.21, "version": "ci"}
+{"event": "request", "path": "/healthz", "status": 200, "duration_ms": 0.19, "version": "ci"}
+{"event": "request", "path": "/readyz", "status": 200, "duration_ms": 0.08, "version": "ci"}
+{"event": "request", "path": "/version", "status": 200, "duration_ms": 0.08, "version": "ci"}
+{"event": "request", "path": "/api/cases", "status": 200, "duration_ms": 0.13, "version": "ci"}
+{"event": "request", "path": "/metrics", "status": 200, "duration_ms": 0.08, "version": "ci"}
+{"event": "request", "path": "/", "status": 200, "duration_ms": 0.09, "version": "ci"}
+{"event": "request", "path": "/healthz", "status": 200, "duration_ms": 0.15, "version": "ci"}
+{"event": "request", "path": "/readyz", "status": 200, "duration_ms": 0.07, "version": "ci"}
+{"event": "request", "path": "/version", "status": 200, "duration_ms": 0.06, "version": "ci"}
+{"event": "request", "path": "/api/cases", "status": 200, "duration_ms": 0.11, "version": "ci"}
+{"event": "request", "path": "/metrics", "status": 200, "duration_ms": 0.07, "version": "ci"}
+{"event": "request", "path": "/", "status": 200, "duration_ms": 0.09, "version": "ci"}

@@ -17,7 +17,7 @@
 
 ## Scan behaviour
 
-CI blocks leaked secrets and fixable HIGH/CRITICAL vulnerabilities in the image. The scan's `ignore-unfixed` setting excludes vulnerabilities without a published fix from the blocking gate; it does not establish that the image contains zero vulnerabilities. Findings should be reviewed in scan artifacts. There are no third-party Python app dependencies to audit.
+CI blocks leaked secrets and fixable HIGH/CRITICAL vulnerabilities in the image. The scan's `ignore-unfixed` setting excludes vulnerabilities without a published fix from the blocking gate; it does not establish that the image contains zero vulnerabilities. Findings should be reviewed in scan artifacts. There are no third-party Python app dependencies to audit. Unused pip/setuptools/wheel tooling and bundled ensurepip wheels are removed from the runtime image. The committed scan records 14 advisory IaC findings; the [validation guide](validation.md) lists them explicitly.
 
 Terraform configuration scanning is **advisory** and saved as a CI artifact. It is not described as a passing security gate. This lab deliberately uses public task IPs, a restricted HTTP option, default AWS encryption keys, short log retention and no WAF/access-log bucket. Such findings need judgement and would require changes for production. See the actual `iac-scan.json` report and [validation](validation.md).
 

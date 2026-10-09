@@ -1,0 +1,25 @@
+test_exact_completed_release_is_success (test_deploy.DeployTests.test_exact_completed_release_is_success) ... ok
+test_in_progress_or_zero_running_tasks_are_rejected (test_deploy.DeployTests.test_in_progress_or_zero_running_tasks_are_rejected) ... ok
+test_mutable_tag_and_other_family_are_rejected (test_deploy.DeployTests.test_mutable_tag_and_other_family_are_rejected) ... ok
+test_release_update_preserves_security_and_removes_aws_read_only_fields (test_deploy.DeployTests.test_release_update_preserves_security_and_removes_aws_read_only_fields) ... ok
+test_stable_automatic_rollback_is_not_success (test_deploy.DeployTests.test_stable_automatic_rollback_is_not_success) ... ok
+test_api_matches_triage_and_marks_synthetic_data (test_http.HttpTests.test_api_matches_triage_and_marks_synthetic_data) ... ok
+test_dashboard_has_real_case_counts_and_release (test_http.HttpTests.test_dashboard_has_real_case_counts_and_release) ... ok
+test_head_and_security_headers (test_http.HttpTests.test_head_and_security_headers) ... ok
+test_html_escapes_version_and_alert_fields (test_http.HttpTests.test_html_escapes_version_and_alert_fields) ... ok
+test_invalid_data_fails_startup (test_http.HttpTests.test_invalid_data_fails_startup) ... ok
+test_metrics_count_success_and_failure (test_http.HttpTests.test_metrics_count_success_and_failure) ... ok
+test_paths_cannot_read_files (test_http.HttpTests.test_paths_cannot_read_files) ... ok
+test_readiness_failure_does_not_fail_liveness (test_http.HttpTests.test_readiness_failure_does_not_fail_liveness) ... ok
+test_unsupported_write_is_rejected (test_http.HttpTests.test_unsupported_write_is_rejected) ... ok
+test_case_contains_mitre_and_sla_context (test_triage.SocTriageTests.test_case_contains_mitre_and_sla_context) ... ok
+test_critical_case_gets_top_priority (test_triage.SocTriageTests.test_critical_case_gets_top_priority) ... ok
+test_default_notes_are_generated_when_missing (test_triage.SocTriageTests.test_default_notes_are_generated_when_missing) ... ok
+test_false_positive_guidance_is_preserved (test_triage.SocTriageTests.test_false_positive_guidance_is_preserved) ... ok
+test_recommendation_escalates_highest_priority (test_triage.SocTriageTests.test_recommendation_escalates_highest_priority) ... ok
+test_sample_data_loads_and_creates_multiple_cases (test_triage.SocTriageTests.test_sample_data_loads_and_creates_multiple_cases) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 4.561s
+
+OK
