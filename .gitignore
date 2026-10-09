@@ -9,4 +9,7 @@ __pycache__/
 backend.hcl
 .env
 reports/local-*
+reports/ci-first-run/
 output/
+.cache/
+trivy_envs.txt

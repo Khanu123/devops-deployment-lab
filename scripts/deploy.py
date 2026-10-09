@@ -46,7 +46,10 @@ def deploy(image, version):
     if service.get("failures") or len(service["services"]) != 1:
         raise RuntimeError("Provision infra/main before deploying the service")
     current = service["services"][0]["taskDefinition"]
-    task = aws("ecs", "describe-task-definition", "--task-definition", current)["taskDefinition"]
+    # Terraform may have registered a newer configuration revision without changing
+    # the service's release revision. Use that latest family configuration as the
+    # template so subsequent releases pick up infrastructure changes.
+    task = aws("ecs", "describe-task-definition", "--task-definition", "devops-lab")["taskDefinition"]
     requested = prepare_task(task, image, version)
     registered = aws("ecs", "register-task-definition", "--cli-input-json", json.dumps(requested))
     target = registered["taskDefinition"]["taskDefinitionArn"]

@@ -86,7 +86,7 @@ Inspect the `devops-lab` CloudWatch dashboard and alarms. No alarm email can arr
 
 ## Subsequent releases and rollback
 
-Commit to `main`, then manually run **Publish or deploy to AWS** with **deploy**. It pushes a digest-pinned release, registers a new task revision based on the current service configuration, and verifies that the requested revision completed. It rejects the case where ECS automatically rolled back to an older healthy revision.
+Commit to `main`, then manually run **Publish or deploy to AWS** with **deploy**. It pushes a digest-pinned release, registers a new task revision based on the latest task-family configuration, and verifies that the requested revision completed. It rejects the case where ECS automatically rolled back to an older healthy revision.
 
 To restore a prior release, run **Roll back AWS release** with its known-good full Git SHA. It resolves the retained immutable ECR digest, updates release metadata, registers a new task revision and verifies it. See [runbook](runbook.md).
 
