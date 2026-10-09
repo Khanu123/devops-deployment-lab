@@ -1,0 +1,6 @@
+aws_region  = "eu-west-2"
+image_uri   = "123456789012.dkr.ecr.eu-west-2.amazonaws.com/devops-lab@sha256:REPLACE_WITH_64_HEX_DIGEST"
+app_version = "REPLACE_WITH_FULL_40_HEX_GIT_SHA"
+allowed_cidr = "203.0.113.10/32" # Replace with your actual public IPv4 address.
+# certificate_arn = "arn:aws:acm:eu-west-2:123456789012:certificate/your-certificate-id"
+# alarm_email = "your-email@example.com"

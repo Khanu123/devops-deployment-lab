@@ -1,0 +1,5 @@
+bucket       = "devops-lab-state-123456789012-eu-west-2"
+key          = "devops-lab/terraform.tfstate"
+region       = "eu-west-2"
+encrypt      = true
+use_lockfile = true

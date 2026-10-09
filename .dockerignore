@@ -1,0 +1,14 @@
+.git
+.github
+.venv
+__pycache__
+*.pyc
+infra
+tests
+scripts
+docs
+reports
+*.tfstate*
+*.tfvars
+*.tfplan
+output

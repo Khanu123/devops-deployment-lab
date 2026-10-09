@@ -1,0 +1,101 @@
+name: Verify DevOps lab
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - name: Unit and HTTP integration tests
+        run: |
+          mkdir -p reports
+          set -o pipefail
+          python -m unittest discover -s tests -v 2>&1 | tee reports/python-tests.txt
+      - name: Real process recovery drill
+        run: python scripts/recovery_drill.py --output reports/process-recovery.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: application-evidence
+          path: reports/
+
+  terraform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: '1.13.5'
+          terraform_wrapper: false
+      - name: Format, validate, and mock-plan infrastructure
+        run: |
+          mkdir -p reports
+          set -o pipefail
+          terraform fmt -check -recursive infra
+          terraform -chdir=infra/bootstrap init -backend=false -input=false -lockfile=readonly
+          terraform -chdir=infra/bootstrap validate -no-color | tee reports/bootstrap-validation.txt
+          terraform -chdir=infra/bootstrap test -no-color | tee reports/bootstrap-tests.txt
+          terraform -chdir=infra/main init -backend=false -input=false -lockfile=readonly
+          terraform -chdir=infra/main validate -no-color | tee reports/infrastructure-validation.txt
+          terraform -chdir=infra/main test -no-color | tee reports/terraform-tests.txt
+      - name: Infrastructure risk report
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: config
+          scan-ref: infra
+          format: json
+          output: reports/iac-scan.json
+          exit-code: '0'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: infrastructure-evidence
+          path: reports/
+
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build container and validate Compose
+        run: |
+          docker compose config --quiet
+          docker build --pull --build-arg APP_VERSION=ci -t devops-lab:ci .
+      - name: Docker smoke, failed candidate, and recovery
+        run: bash scripts/container_drill.sh
+      - name: Block fixable high or critical image vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: devops-lab:ci
+          format: json
+          output: reports/image-scan.json
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+      - name: Block leaked secrets
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: secret
+          format: json
+          output: reports/secret-scan.json
+          exit-code: '1'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: container-evidence
+          path: reports/

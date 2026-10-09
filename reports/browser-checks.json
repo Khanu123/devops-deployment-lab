@@ -1,0 +1,7 @@
+{
+  "result": "passed",
+  "case_cards": 5,
+  "mobile_horizontal_overflow": false,
+  "page_errors": [],
+  "scope": "local app in headless Microsoft Edge"
+}

@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.terraform/
+*.tfstate*
+*.tfvars
+!*.tfvars.example
+*.tfplan
+backend.hcl
+.env
+reports/local-*
+output/

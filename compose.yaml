@@ -1,0 +1,20 @@
+services:
+  dashboard:
+    image: devops-lab:${APP_VERSION:-local}
+    build:
+      context: .
+      args:
+        APP_VERSION: ${APP_VERSION:-local}
+    environment:
+      APP_FAIL_READINESS: ${APP_FAIL_READINESS:-false}
+    ports:
+      - "127.0.0.1:8080:8080"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 100
+    mem_limit: 256m
+    cpus: 0.5
+    restart: unless-stopped
+    tmpfs:
+      - /tmp:size=16m,mode=1777

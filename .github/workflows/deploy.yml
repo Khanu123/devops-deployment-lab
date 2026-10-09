@@ -1,0 +1,86 @@
+name: Publish or deploy to AWS
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Publish only for first setup, or publish and deploy to an existing service
+        type: choice
+        options: [publish-only, deploy]
+        default: publish-only
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aws-devops-lab
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    uses: ./.github/workflows/ci.yml
+  publish:
+    needs: verify
+    if: github.ref == 'refs/heads/main'
+    environment: devops-lab
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      ECR_URL: ${{ vars.ECR_REPOSITORY_URL }}
+      ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+      RELEASE_SHA: ${{ github.sha }}
+      DEPLOY_MODE: ${{ inputs.mode }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Validate account configuration
+        run: |
+          test -n "$AWS_REGION" && test -n "$ROLE_ARN" && test -n "$ECR_URL"
+          python - <<'PY'
+          import os,re
+          assert re.fullmatch(r'[0-9]{12}\.dkr\.ecr\.[a-z0-9-]+\.amazonaws\.com/devops-lab', os.environ['ECR_URL'])
+          PY
+      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: devops-lab-${{ github.run_id }}
+      - name: Build and publish immutable release
+        run: |
+          mkdir -p reports
+          # Reuse immutable SHA tags on reruns; build once when the tag is absent.
+          if ! aws ecr describe-images --repository-name devops-lab --image-ids imageTag="$RELEASE_SHA" >/dev/null 2>&1; then
+            aws ecr get-login-password | docker login --username AWS --password-stdin "${ECR_URL%%/*}"
+            docker build --pull --build-arg APP_VERSION="$RELEASE_SHA" -t "$ECR_URL:$RELEASE_SHA" .
+            docker save "$ECR_URL:$RELEASE_SHA" -o /tmp/release-image.tar
+            echo 'RELEASE_BUILT=true' >> "$GITHUB_ENV"
+          fi
+      - name: Scan the actual release image before publishing
+        if: env.RELEASE_BUILT == 'true'
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          input: /tmp/release-image.tar
+          format: json
+          output: reports/release-image-scan.json
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+      - name: Push and record digest
+        run: |
+          if [ "${RELEASE_BUILT:-false}" = true ]; then docker push "$ECR_URL:$RELEASE_SHA"; fi
+          DIGEST=$(aws ecr describe-images --repository-name devops-lab --image-ids imageTag="$RELEASE_SHA" --query 'imageDetails[0].imageDigest' --output text)
+          echo "IMAGE_URI=$ECR_URL@$DIGEST" >> "$GITHUB_ENV"
+          printf 'Image: `%s@%s`\n\nVersion: `%s`\n' "$ECR_URL" "$DIGEST" "$RELEASE_SHA" >> "$GITHUB_STEP_SUMMARY"
+      - name: Deploy and verify the requested ECS revision
+        if: inputs.mode == 'deploy'
+        run: |
+          set -o pipefail
+          python scripts/deploy.py --image "$IMAGE_URI" --version "$RELEASE_SHA" | tee reports/deployment.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: release-evidence-${{ github.run_id }}
+          path: reports/
